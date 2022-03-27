@@ -1,0 +1,48 @@
+{% extends "security/base.html" %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{% block navbar %}
+<div class="p-3 bg-primary text-white text-center">
+  <h1>Project Board ReVamp App</h1>
+  <p>Connecting Partners with Students</p>
+</div>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <div class="container-fluid">
+      <a class="navbar-brand" href="{{url_for('base_page')}}">ReVamp App</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mynavbar">
+          <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                  <a class="nav-link" href="{{url_for('base_page')}}">
+                      Home
+                  </a>
+              </li>
+          </ul>
+          <ul class="navbar-nav">
+              <li class="nav-item">
+                  <a class="nav-link" href="{{url_for('security.register')}}">Student Register</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{{url_for('security.register',next='partnersUser')}}">Partner Register</a>
+              </li>
+          </ul>
+      </div>
+  </div>
+</nav>
+{% endblock %}
+{% block content %}
+<div class = "container">
+  {% include "security/_messages.html" %}
+  <h1>{{ _('Login') }}</h1>
+  <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
+    {{ login_user_form.hidden_tag() }}
+    {{ render_field_with_errors(login_user_form.email) }}
+    {{ render_field_with_errors(login_user_form.password) }}
+    {{ render_field_with_errors(login_user_form.remember) }}
+    <div>
+      <input class="btn btn-outline-info" type="submit" value = "Login">
+    </div> 
+  </form>
+</div>
+{% endblock %}

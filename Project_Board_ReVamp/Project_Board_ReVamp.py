@@ -1,12 +1,14 @@
-from flask import Flask, json
+from flask import Flask, json, render_template, redirect, url_for
+from flask_security import login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin
-from werkzeug.security import generate_password_hash
 from flask_security.forms import RegisterForm
 from wtforms import StringField
 from wtforms.validators import DataRequired
-from util.validators import Unique
+from Project_Board_ReVamp.util.validators import Unique
+# from flask_user.signals import user_registered, user_logged_in
+from flask_security import user_registered
 
 app = Flask(
     __name__,
@@ -14,10 +16,11 @@ app = Flask(
     static_folder='static'
 )
 # this is for getting the secret key
-with open('../secrets.json') as f:
+with open('./secrets.json') as f:
     data = json.load(f)
 
 app.config['SECRET_KEY'] = data['secret_key']
+app.config['PORT'] = data['port']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Project_Board_ReVampDatabase.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECURITY_PASSWORD_HASH'] = "bcrypt"
@@ -77,6 +80,7 @@ class Profile(db.Model):  # !!FIX!!
     opportunities = db.Column(db.String(255))
     education = db.Column(db.String(255))
     study = db.Column(db.String(255))
+    approved = db.Column(db.Boolean(), nullable=False)
     id = db.Column(db.Integer, db.ForeignKey(
         "users.id"), nullable=False)
     projects_id = db.Column(db.Integer, db.ForeignKey(
@@ -94,6 +98,7 @@ class Project(db.Model):
     project_description = db.Column(db.String(255))
     project_duration = db.Column(db.String(255))
     project_requirements = db.Column(db.String(70), nullable=False)
+    project_approved = db.Column(db.Boolean(), nullable=False)
     id = db.Column(db.Integer, db.ForeignKey(
         "users.id"), nullable=False)
 
@@ -127,7 +132,7 @@ def create_user():
     try:
         user_datastore.create_role(name='studentUser', description='Student who joins projects.')
         user_datastore.create_role(name='partnersUser', description='Partners who creates projects.')
-        admin = user_datastore.create_user(email='admin@gmail.com', password=generate_password_hash('password'),
+        admin = user_datastore.create_user(email='admin@gmail.com', password='password',
                                            username="admin", first_name="Rahul", middle_name="Kurian",
                                            last_name="Jacob")
         role = user_datastore.create_role(name='adminUser', description='Admins who approves projects.')
@@ -137,6 +142,37 @@ def create_user():
     except:
         db.session.rollback()
         print("Previous instance of DB in-use.")
+
+
+@user_registered.connect_via(app)
+def _after_registration_hook(sender, user, **extra):
+    if extra['form_data']['next'] == "partnersUser":
+        user_datastore.add_role_to_user(user, 'partnersUser')
+    else:
+        user_datastore.add_role_to_user(user, 'studentUser')
+
+
+@app.route('/', methods=["GET", "POST"])
+def base_page():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('security.login'))
+
+
+@app.route('/dashboard', methods=["GET"])
+@login_required
+def dashboard():
+    role_name = "No Role"
+    if len(current_user.roles):
+        role_name = current_user.roles[0].name
+    return role_name
+
+
+@app.route('/partnersUser', methods=["GET", "POST"])
+def partners_user():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('security.login'))
 
 
 if __name__ == "__main__":

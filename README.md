@@ -1,7 +1,7 @@
 # Project_Board_ReVamp
  This is a project for the Project Board ReVamp Challenge for WinHacks 2022.
 
- My implementation of this project is a Python-Flask sever that uses sever side rendering and SQLlite for database storage.
+ Our team's implementation of this project is a Python-Flask sever that uses sever side rendering and SQLite for database storage.
 
  There is a login page for Administrators, Partners and Students.
 
@@ -19,7 +19,7 @@
  - Currently only view submitted projects.
  - They can manually accept a project or reject with a specified reason.
 
- ## Features to be implemnted
+ ## Features to be implemented
  1. Some sign-up procedure for Administrators.
  1. Add more details such as profile photo uploads, project videos, markdown editor
  1. Notification (Push notification, email servers, etc.)
@@ -47,7 +47,7 @@ sudo apt install caddy
 ```bash
 cd ~
 
-# here, put in your Caddyfile config. An example of the required format is given in the repository
+# Put in your Caddyfile config. An example of the required format is given in the repository
 nano Caddyfile
 
 sudo caddy stop
@@ -57,15 +57,12 @@ sudo caddy start
 # Setting up and running the site
 
 ```bash
-# cd into the project repo
+# Go inside the project repo
 cd <repo-name>
 cp *.json secrets.json
 
-# update your secret
+# Update your secret. Change the string to a new long random one.
 nano secrets.json
-
-# change debug=True to debug=False in app.py
-nano app.py
 
 # install python dependencies dependencies
 pip install -r requirements.txt
@@ -73,5 +70,6 @@ pip install -r requirements.txt
 # run the app!
 python3 app.py &
 ```
+Note: you may need to use `pip3` instead of `pip` in the above command
 
-**Credit:** This repo is based on Jeremie Bornais's [gcp-caddy-tutorial](https://github.com/jere-mie/gcp-caddy-tutorial)
+**Credit:** This repo is based on Jeremie Bornais's [gcp-caddy-tutorial](https://github.com/jere-mie/gcp-caddy-tutorial) and [Intro to Flask Workshop](https://github.com/WinHacks/flask-workshop)
