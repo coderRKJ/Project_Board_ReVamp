@@ -57,8 +57,9 @@ sudo caddy start
 # Setting up and running the site
 
 ```bash
+git clone https://github.com/coderRKJ/Project_Board_ReVamp.git
 # Go inside the project repo
-cd <repo-name>
+cd Project_Board_ReVamp
 cp *.json secrets.json
 
 # Update your secret. Change the string to a new long random one.
@@ -69,6 +70,8 @@ pip install -r requirements.txt
 
 # run the app!
 python3 app.py &
+# or for production server
+python3 app.py prod &
 ```
 Note: you may need to use `pip3` instead of `pip` in the above command
 
